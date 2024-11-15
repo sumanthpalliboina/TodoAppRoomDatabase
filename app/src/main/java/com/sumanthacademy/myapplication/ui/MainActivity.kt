@@ -5,6 +5,7 @@ import android.app.AlarmManager
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
+import android.content.ClipData.Item
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
@@ -30,7 +31,9 @@ import androidx.core.graphics.drawable.toBitmap
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.timepicker.MaterialTimePicker
@@ -47,6 +50,8 @@ import com.sumanthacademy.myapplication.databinding.ActivityMainBinding
 import com.sumanthacademy.myapplication.fragments.DeleteFragment
 import com.sumanthacademy.myapplication.fragments.EditFragment
 import com.sumanthacademy.myapplication.global.BaseActivity
+import com.sumanthacademy.myapplication.helper.TodoItemTouchHelper
+import com.sumanthacademy.myapplication.interfaces.CallBackItemTouch
 import com.sumanthacademy.myapplication.interfaces.OnTodoClickListener
 import com.sumanthacademy.myapplication.interfaces.OnTodoDeleteClickListener
 import com.sumanthacademy.myapplication.interfaces.OnTodoRemainderClickListener
@@ -63,7 +68,7 @@ import java.util.Calendar
 import java.util.Collections
 
 class MainActivity : BaseActivity(),View.OnClickListener, OnTodoClickListener,
-    OnTodoDeleteClickListener, OnTodoRemainderClickListener {
+    OnTodoDeleteClickListener, OnTodoRemainderClickListener, CallBackItemTouch {
 
     lateinit var activityMainBinding: ActivityMainBinding
 
@@ -162,6 +167,26 @@ class MainActivity : BaseActivity(),View.OnClickListener, OnTodoClickListener,
                 Toast.makeText(this,"${it.todo.title} todo remainder attached to alarm. you will be notified soon",Toast.LENGTH_LONG).show()
             }
         }
+
+        /*var todoItemTouchHelper = TodoItemTouchHelper(this)
+        var itemTouchHelper = ItemTouchHelper(todoItemTouchHelper)
+        itemTouchHelper.attachToRecyclerView(activityMainBinding.todosRecyclerView)*/
+
+        ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP or ItemTouchHelper.DOWN,ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT){
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean {
+                TODO("Not yet implemented")
+            }
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                todoItemTableViewModel.deleteTodo(todoAdapter.getItem(viewHolder.absoluteAdapterPosition))
+            }
+
+        }).attachToRecyclerView(activityMainBinding.todosRecyclerView)
+
     }
 
     fun setLayoutManger(){
@@ -464,6 +489,14 @@ class MainActivity : BaseActivity(),View.OnClickListener, OnTodoClickListener,
         timePicker.addOnPositiveButtonClickListener {
             setTodoRemainderTimeWithBroadcast(item,timePicker.hour, timePicker.minute)
         }
+    }
+
+    override fun itemTouchOnMove(oldPosition: Int, newPosition: Int) {
+        println("itemTouchOnMove")
+    }
+
+    override fun itemTouchOnSwipe(viewHolder: RecyclerView.ViewHolder, position: Int) {
+       println("itemTouchOnSwipe")
     }
 
 

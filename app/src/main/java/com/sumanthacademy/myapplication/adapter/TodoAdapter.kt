@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
@@ -37,6 +38,9 @@ class TodoAdapter(
         val deleteIcon = itemView.findViewById<ImageView>(R.id.delIcon)
         val remainderIcon = itemView.findViewById<ImageView>(R.id.remainderIcon)
         val itemTodo = itemView.findViewById<RelativeLayout>(R.id.itemTodo)
+        /*val viewB = itemView.findViewById<RelativeLayout>(R.id.viewBackground)
+        val todoDetails = itemView.findViewById<LinearLayout>(R.id.todoDetails)*/
+
         init {
             itemView.setSafeOnClickListener {
                 absoluteAdapterPosition.let{

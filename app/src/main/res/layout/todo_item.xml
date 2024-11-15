@@ -9,6 +9,35 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
+    <!--<RelativeLayout
+        android:id="@+id/viewBackground"
+        android:layout_width="match_parent"
+        android:background="@drawable/swipe_todo_bg"
+        android:layout_height="80dp">
+
+        <ImageView
+            android:id="@+id/swipeDeleteIcon"
+            android:src="@drawable/baseline_delete_24"
+            android:contentDescription="TODO"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="@dimen/margin10dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="@dimen/margin10dp"
+            android:text="DELETE"
+            android:layout_toStartOf="@id/swipeDeleteIcon"
+            android:layout_toLeftOf="@id/swipeDeleteIcon"
+            android:textColor="#fff"
+            android:textSize="13dp"/>
+
+    </RelativeLayout>-->
+
     <LinearLayout
         android:id="@+id/todoDetails"
         android:orientation="horizontal"
@@ -81,6 +110,15 @@
             android:layout_height="wrap_content"/>
 
     </LinearLayout>
+
+    <!--<View
+        android:layout_width="match_parent"
+        android:layout_height="0.6dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="72dp"
+        android:layout_marginLeft="72dp"
+        android:background="#DBDBDB"/>-->
 
 
 </RelativeLayout>
