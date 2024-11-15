@@ -1,4 +1,4 @@
-package com.sumanthacademy.myapplication
+package com.sumanthacademy.myapplication.ui
 
 import android.Manifest
 import android.app.AlarmManager
@@ -27,6 +27,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.graphics.drawable.toBitmap
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -34,9 +35,14 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
+import com.sumanthacademy.myapplication.App
+import com.sumanthacademy.myapplication.R
+import com.sumanthacademy.myapplication.ViewModel.TodoItemTableViewModel
+import com.sumanthacademy.myapplication.ViewModel.TodoItemTableViewModelFactory
 import com.sumanthacademy.myapplication.ViewModel.TodoLive
 import com.sumanthacademy.myapplication.ViewModel.TodoRemainder
 import com.sumanthacademy.myapplication.ViewModel.TodoViewModel
+import com.sumanthacademy.myapplication.adapter.TodoAdapter
 import com.sumanthacademy.myapplication.databinding.ActivityMainBinding
 import com.sumanthacademy.myapplication.fragments.DeleteFragment
 import com.sumanthacademy.myapplication.fragments.EditFragment
@@ -45,6 +51,7 @@ import com.sumanthacademy.myapplication.interfaces.OnTodoClickListener
 import com.sumanthacademy.myapplication.interfaces.OnTodoDeleteClickListener
 import com.sumanthacademy.myapplication.interfaces.OnTodoRemainderClickListener
 import com.sumanthacademy.myapplication.model.Todo
+import com.sumanthacademy.myapplication.model.entity.TodoItem
 import com.sumanthacademy.myapplication.receivers.NotificationReceiver
 import com.sumanthacademy.myapplication.receivers.PositiveBtnInNotificationReceiver
 import com.sumanthacademy.myapplication.services.PositiveBtnNotificationService
@@ -52,7 +59,6 @@ import com.sumanthacademy.myapplication.util.AppConstants
 import com.sumanthacademy.myapplication.util.Helper
 import com.sumanthacademy.myapplication.util.SPUtil
 import com.sumanthacademy.myapplication.util.setExactHrAndMinute
-import org.greenrobot.eventbus.Subscribe
 import java.util.Calendar
 import java.util.Collections
 
@@ -60,14 +66,23 @@ class MainActivity : BaseActivity(),View.OnClickListener, OnTodoClickListener,
     OnTodoDeleteClickListener, OnTodoRemainderClickListener {
 
     lateinit var activityMainBinding: ActivityMainBinding
-    var todoItems:ArrayList<Todo> = ArrayList<Todo>()
-    lateinit var todoAdapter:TodoAdapter
+
+    /*var todoItems:ArrayList<Todo> = ArrayList<Todo>()*/
+
+    var todoItemsDesc:List<TodoItem> = ArrayList()
+    var todoItemsAsc:List<TodoItem> = ArrayList()
+
+    lateinit var todoAdapter: TodoAdapter
     private lateinit var todoViewModel: TodoViewModel
 
     private final val CHANNEL_ID = "1"
     lateinit var notificationMangerCompat:NotificationManagerCompat
     lateinit var builder:NotificationCompat.Builder
     lateinit var positiveBtnInNotificationReceiver: PositiveBtnInNotificationReceiver
+
+    lateinit var todoItemTableViewModel: TodoItemTableViewModel
+
+    var refreshed = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -79,10 +94,14 @@ class MainActivity : BaseActivity(),View.OnClickListener, OnTodoClickListener,
         setContentView(view)
 
         setLayoutManger()
-        persistTodos()
+        setTodoItemTableViewModel()
+        listenThroughObserver()
+
+        /*persistTodos()*/
+
         activityMainBinding.todosRecyclerView.setHasFixedSize(false)
         activityMainBinding.todosRecyclerView.itemAnimator = null
-        todoAdapter = TodoAdapter(this,todoItems,this,this,this)
+        todoAdapter = TodoAdapter(this,this,this,this)
         activityMainBinding.todosRecyclerView.adapter = todoAdapter
 
         setListeners()
@@ -95,7 +114,46 @@ class MainActivity : BaseActivity(),View.OnClickListener, OnTodoClickListener,
             }, AppConstants.POP_INTRO_DELAY.toLong()
         )
 
+
+        activityMainBinding.swipeRefreshLayout.setOnRefreshListener {
+            if (refreshed){
+                refreshed = false
+            } else {
+                refreshed = true
+            }
+            todoViewModel.isRefreshed.value = true
+            /*activityMainBinding.swipeRefreshLayout.isRefreshing = false
+            Collections.shuffle(this.todoItems, java.util.Random(System.currentTimeMillis()))
+            *//*SPUtil.saveTodos(this.todoItems)*//*
+            todoAdapter.notifyDataSetChanged()*/
+        }
+
+        startLocalNotification()
+    }
+
+    fun setTodoItemTableViewModel(){
         todoViewModel = ViewModelProvider(this).get(TodoViewModel::class.java)
+        val todoItemTableViewModelFactory = TodoItemTableViewModelFactory((application as App).repository)
+        todoItemTableViewModel = ViewModelProvider(this,todoItemTableViewModelFactory).get(TodoItemTableViewModel::class.java)
+    }
+
+    fun listenThroughObserver(){
+        todoItemTableViewModel.myAllTodos.observe(this, Observer { todos ->
+            this.todoItemsAsc = todos
+            todoAdapter.setTodosToAdapter(todos)
+        })
+        todoItemTableViewModel.myAllDescTodos.observe(this, Observer { todos ->
+            this.todoItemsDesc = todos
+        })
+        todoViewModel.isRefreshed.observe(this){it ->
+            if (it && refreshed) {
+                todoAdapter.setTodosToAdapter(todoItemsDesc)
+                activityMainBinding.swipeRefreshLayout.isRefreshing = false
+            } else {
+                todoAdapter.setTodosToAdapter(todoItemsAsc)
+                activityMainBinding.swipeRefreshLayout.isRefreshing = false
+            }
+        }
         todoViewModel.deletedData.observe(this){ it ->
             Toast.makeText(this,"${it.todo.title} is deleted",Toast.LENGTH_SHORT).show()
         }
@@ -104,15 +162,6 @@ class MainActivity : BaseActivity(),View.OnClickListener, OnTodoClickListener,
                 Toast.makeText(this,"${it.todo.title} todo remainder attached to alarm. you will be notified soon",Toast.LENGTH_LONG).show()
             }
         }
-
-        activityMainBinding.swipeRefreshLayout.setOnRefreshListener {
-            activityMainBinding.swipeRefreshLayout.isRefreshing = false
-            Collections.shuffle(this.todoItems, java.util.Random(System.currentTimeMillis()))
-            SPUtil.saveTodos(this.todoItems)
-            todoAdapter.notifyDataSetChanged()
-        }
-
-        startLocalNotification()
     }
 
     fun setLayoutManger(){
@@ -128,10 +177,6 @@ class MainActivity : BaseActivity(),View.OnClickListener, OnTodoClickListener,
         setLayoutManger()
     }
 
-    fun persistTodos(){
-        todoItems = SPUtil.getTodos()
-    }
-
     fun hideKeyboard(){
         val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         inputMethodManager.hideSoftInputFromWindow(activityMainBinding.input.windowToken,0)
@@ -140,13 +185,10 @@ class MainActivity : BaseActivity(),View.OnClickListener, OnTodoClickListener,
     fun addTodo(){
         val text = activityMainBinding.input.text.toString()
         if (text.isNotEmpty()){
-            todoItems.apply {
-                add(Todo(R.drawable.sumanth_photo_qqqzsw,text,"Not Started Yet"))
-            }
-            todoAdapter.addTodo(Todo(R.drawable.sumanth_photo_qqqzsw,text,"Not Started Yet"))
+            val todoItem = TodoItem(R.drawable.sumanth_photo_qqqzsw,text,"Not Started Yet")
+            todoItemTableViewModel.insertTodo(todoItem)
             activityMainBinding.input.setText("")
             hideKeyboard()
-            SPUtil.saveTodos(todoItems)
         }else{
             hideKeyboard()
             val dialogBuilder = AlertDialog.Builder(this)
@@ -203,7 +245,7 @@ class MainActivity : BaseActivity(),View.OnClickListener, OnTodoClickListener,
             val channel = NotificationChannel(CHANNEL_ID,"1",NotificationManager.IMPORTANCE_DEFAULT)
             val manager:NotificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             manager.createNotificationChannel(channel)
-            val mainActivityIntent = Intent(applicationContext,MainActivity::class.java).apply {
+            val mainActivityIntent = Intent(applicationContext, MainActivity::class.java).apply {
                 putExtra("FROM_NOTIFICATION",true)
             }
             builder.setSmallIcon(R.drawable.todos_animation)
@@ -215,7 +257,7 @@ class MainActivity : BaseActivity(),View.OnClickListener, OnTodoClickListener,
                 .setStyle(NotificationCompat.BigTextStyle().bigText(resources.getString(R.string.intro_notification_text)))
                 .addAction(R.drawable.todos_animation,"Add Todos",pendingIntent)
         } else {
-            val mainActivityIntent = Intent(applicationContext,MainActivity::class.java).apply {
+            val mainActivityIntent = Intent(applicationContext, MainActivity::class.java).apply {
                 putExtra("FROM_NOTIFICATION",true)
             }
             builder.setSmallIcon(R.drawable.todos_animation)
@@ -318,11 +360,11 @@ class MainActivity : BaseActivity(),View.OnClickListener, OnTodoClickListener,
         }
     }
 
-    override fun onTodoItemClickListener(position: Int, tod: Todo) {
-        var item = todoItems[position]
+    override fun onTodoItemClickListener(position: Int, tod: TodoItem) {
+        var item = todoAdapter.getItem(position)
         item.let{
             val fragmentManager = supportFragmentManager
-            val editFragment = EditFragment.newInstance(position,item.title.toString() ?: "default",item.status.toString() ?: "default")
+            val editFragment = EditFragment.newInstance(position,TodoItem(item.image ?: 0,item.title.toString() ?: "default",item.status.toString() ?: "default"))
             if (fragmentManager != null){
                 editFragment.show(fragmentManager, EditFragment.TAG)
                 editFragment.isCancelable = false
@@ -330,15 +372,16 @@ class MainActivity : BaseActivity(),View.OnClickListener, OnTodoClickListener,
         }
     }
 
-    fun editAndSaveTodo(position: Int,todo: Todo){
-        this.todoItems[position].title = todo.title.toString()
-        this.todoItems[position].status = todo.status.toString()
-        todoAdapter.editTodo(position,todo)
-        SPUtil.saveTodos(todoItems)
+    fun editAndSaveTodo(position: Int,todo: TodoItem){
+        val item = todoAdapter.getItem(position)
+        todo.id = item.id
+        todo?.let {
+            todoItemTableViewModel.updateTodo(todo)
+        }
     }
 
     override fun deleteTodoClickListener(position: Int) {
-        var item = todoItems[position]
+        var item = todoAdapter.getItem(position)
         item.let {
             val fragmentManager = supportFragmentManager
             val deleteFragment = DeleteFragment.newInstance(position,item)
@@ -350,9 +393,8 @@ class MainActivity : BaseActivity(),View.OnClickListener, OnTodoClickListener,
     }
 
     fun deleteTodo(position: Int){
-        this.todoItems.removeAt(position)
-        todoAdapter.removeTodo(position)
-        SPUtil.saveTodos(this.todoItems)
+        val todoItem = todoAdapter.getItem(position)
+        todoItemTableViewModel.deleteTodo(todoItem)
     }
 
     fun showBottomSheetDialogForDelete(position:Int){
@@ -363,7 +405,7 @@ class MainActivity : BaseActivity(),View.OnClickListener, OnTodoClickListener,
         val title = view.findViewById<AppCompatTextView>(R.id.myTitle)
         val status = view.findViewById<AppCompatTextView>(R.id.myStatus)
 
-        val item = this.todoItems[position]
+        val item = this.todoAdapter.getItem(position)
 
         title.text = item.title.toString()
         status.text =item.status.toString()
@@ -373,7 +415,7 @@ class MainActivity : BaseActivity(),View.OnClickListener, OnTodoClickListener,
         }
 
         deleteBtn.setOnClickListener{
-            todoViewModel.deletedData.value = TodoLive(true,this.todoItems[position])
+            todoViewModel.deletedData.value = TodoLive(true,this.todoAdapter.getItem(position))
             deleteTodo(position)
             dialog.dismiss()
         }
@@ -390,7 +432,7 @@ class MainActivity : BaseActivity(),View.OnClickListener, OnTodoClickListener,
         dialog.show()
     }
 
-    fun setTodoRemainderTimeWithBroadcast(todo: Todo, hour:Int, minute:Int){
+    fun setTodoRemainderTimeWithBroadcast(todo: TodoItem, hour:Int, minute:Int){
         var calendar = Calendar.getInstance()
         calendar = calendar.setExactHrAndMinute(hour,minute)
         val intent = Intent(applicationContext,NotificationReceiver::class.java)
@@ -408,7 +450,7 @@ class MainActivity : BaseActivity(),View.OnClickListener, OnTodoClickListener,
     }
 
     override fun todoRemainderClickListener(position: Int) {
-        var item = todoItems[position]
+        var item = todoAdapter.getItem(position)
         val calendar = Calendar.getInstance()
         val currentHr = calendar.get(Calendar.HOUR_OF_DAY)
         val currentMin = calendar.get(Calendar.MINUTE)

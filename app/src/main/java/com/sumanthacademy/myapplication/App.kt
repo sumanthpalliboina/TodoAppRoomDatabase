@@ -7,9 +7,17 @@ import android.os.Bundle
 import android.view.WindowManager
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
+import com.sumanthacademy.myapplication.Room.TodoDatabase
+import com.sumanthacademy.myapplication.Room.TodoRepository
 import com.sumanthacademy.myapplication.util.AppConstants
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
 
 class App:Application() {
+    val applicationScope = CoroutineScope(SupervisorJob())
+    val database by lazy { TodoDatabase.getDatabase(this,applicationScope) }
+    val repository by lazy { TodoRepository(database.getTodoDao()) }
+
     companion object{
         lateinit var instance:App
         lateinit var sharedPref:SharedPreferences

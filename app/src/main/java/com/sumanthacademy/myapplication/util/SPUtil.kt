@@ -4,6 +4,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.sumanthacademy.myapplication.App
 import com.sumanthacademy.myapplication.model.Todo
+import com.sumanthacademy.myapplication.model.entity.TodoItem
 
 class SPUtil {
     companion object{
@@ -22,18 +23,18 @@ class SPUtil {
                 ""
             }
         }
-        fun saveTodos(todos:ArrayList<Todo>){
+        fun saveTodos(todos:ArrayList<TodoItem>){
             val sp = App.sharedPref
             val editor = sp.edit()
             editor.putString("todos",Gson().toJson(todos))
             editor.apply()
         }
 
-        fun getTodos():ArrayList<Todo>{
+        fun getTodos():ArrayList<TodoItem>{
             return try{
                 val sp = App.sharedPref
                 val savedData = sp.getString("todos","")
-                val type = object : TypeToken<ArrayList<Todo>>(){}.type
+                val type = object : TypeToken<ArrayList<TodoItem>>(){}.type
                 Gson().fromJson(savedData,type)
             }catch (e:Exception){
                 ArrayList()

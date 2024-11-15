@@ -8,12 +8,13 @@ import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import com.sumanthacademy.myapplication.MainActivity
+import com.sumanthacademy.myapplication.ui.MainActivity
 import com.sumanthacademy.myapplication.R
 import com.sumanthacademy.myapplication.model.Todo
 import com.sumanthacademy.myapplication.ViewModel.TodoLive
 import com.sumanthacademy.myapplication.ViewModel.TodoViewModel
 import com.sumanthacademy.myapplication.databinding.FragmentDeleteBinding
+import com.sumanthacademy.myapplication.model.entity.TodoItem
 import com.sumanthacademy.myapplication.util.AppConstants
 
 
@@ -22,14 +23,14 @@ class DeleteFragment : BottomSheetDialogFragment(),View.OnClickListener {
     lateinit var deleteFragmentBinding:FragmentDeleteBinding
     lateinit var todoViewModel: TodoViewModel
     var todoPosition:Int = 0
-    var deletingTodo: Todo? = null
+    var deletingTodo: TodoItem? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
             todoPosition = it.getInt(AppConstants.POSITION)
             deletingTodo = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                it.getParcelable(AppConstants.TODO, Todo::class.java)
+                it.getParcelable(AppConstants.TODO, TodoItem::class.java)
             } else {
                 @Suppress("DEPRECATION")
                 it.getParcelable(AppConstants.TODO)
@@ -49,7 +50,7 @@ class DeleteFragment : BottomSheetDialogFragment(),View.OnClickListener {
     companion object {
         const val TAG = "DeleteFragment"
         @JvmStatic
-        fun newInstance(position: Int, todo: Todo) =
+        fun newInstance(position: Int, todo: TodoItem) =
             DeleteFragment().apply {
                 arguments = Bundle().apply {
                     putInt(AppConstants.POSITION, position)
@@ -61,6 +62,10 @@ class DeleteFragment : BottomSheetDialogFragment(),View.OnClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         todoViewModel = ViewModelProvider(requireActivity()).get(TodoViewModel::class.java)
+        deletingTodo?.let {
+            deleteFragmentBinding.myTitle.text = deletingTodo?.title.toString()
+            deleteFragmentBinding.myStatus.text = deletingTodo?.status.toString()
+        }
         deleteFragmentBinding.cancel.setOnClickListener {
             dismiss()
         }

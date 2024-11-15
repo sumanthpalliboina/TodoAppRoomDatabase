@@ -1,4 +1,4 @@
-package com.sumanthacademy.myapplication
+package com.sumanthacademy.myapplication.services
 
 import android.content.BroadcastReceiver
 import android.content.Context

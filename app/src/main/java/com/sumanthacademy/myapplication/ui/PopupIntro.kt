@@ -1,8 +1,7 @@
-package com.sumanthacademy.myapplication
+package com.sumanthacademy.myapplication.ui
 
 import android.app.Dialog
 import android.content.Context
-import android.content.pm.ActivityInfo.WindowLayout
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -15,6 +14,7 @@ import android.view.WindowManager
 import android.widget.ImageView
 import android.widget.LinearLayout
 import androidx.viewpager2.widget.ViewPager2
+import com.sumanthacademy.myapplication.R
 import com.sumanthacademy.myapplication.adapter.IntroImageAdapter
 import com.sumanthacademy.myapplication.databinding.PopupIntroBinding
 import com.sumanthacademy.myapplication.model.IntroImageItem
@@ -24,7 +24,7 @@ class PopupIntro(val fcontext: Context, val packageName:String):Dialog(fcontext)
     private var binding:PopupIntroBinding? = null
     lateinit private var dotsImages:Array<ImageView>
     lateinit var pageChangeCallback: ViewPager2.OnPageChangeCallback
-    lateinit var onResponse: (l:ResponseType) -> Unit
+    lateinit var onResponse: (l: ResponseType) -> Unit
     var pagePosition:Int = 0
 
     enum class ResponseType{
@@ -121,7 +121,7 @@ class PopupIntro(val fcontext: Context, val packageName:String):Dialog(fcontext)
 
     }
 
-    fun showDialog(listener: (l:ResponseType) -> Unit) {
+    fun showDialog(listener: (l: ResponseType) -> Unit) {
         onResponse = listener
         this.show()
     }

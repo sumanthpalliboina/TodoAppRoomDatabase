@@ -1,7 +1,7 @@
 package com.sumanthacademy.myapplication.util
 
 import android.view.View
-import com.sumanthacademy.myapplication.SafeClickListener
+import com.sumanthacademy.myapplication.helper.SafeClickListener
 import java.util.Calendar
 
 fun View.setSafeOnClickListener(onSafeClick:(View) -> Unit){

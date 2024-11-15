@@ -1,4 +1,4 @@
-package com.sumanthacademy.myapplication
+package com.sumanthacademy.myapplication.adapter
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -14,19 +14,22 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.sumanthacademy.myapplication.R
 import com.sumanthacademy.myapplication.interfaces.OnTodoClickListener
 import com.sumanthacademy.myapplication.interfaces.OnTodoDeleteClickListener
 import com.sumanthacademy.myapplication.interfaces.OnTodoRemainderClickListener
 import com.sumanthacademy.myapplication.model.Todo
+import com.sumanthacademy.myapplication.model.entity.TodoItem
 import com.sumanthacademy.myapplication.util.setSafeOnClickListener
 
 class TodoAdapter(
     val context: Context,
-    val itemsList:ArrayList<Todo>,
     private var todoClickListener: OnTodoClickListener,
     private var onDeleteTodoClickListener: OnTodoDeleteClickListener,
     private var onTodoRemainderClickListener: OnTodoRemainderClickListener
     ): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+
+    private var itemsList:List<TodoItem> = ArrayList()
 
     inner class TodoViewHolder(itemView: View):RecyclerView.ViewHolder(itemView){
         val title = itemView.findViewById<TextView>(R.id.title)
@@ -80,75 +83,99 @@ class TodoAdapter(
                     "Not Started Yet".lowercase() -> {
                         println("not started")
                         context?.let { it1 ->
-                            var drawable = ContextCompat.getDrawable(it1,R.drawable.card_todo_bg) as GradientDrawable   //here drawable is shape
+                            var drawable = ContextCompat.getDrawable(it1, R.drawable.card_todo_bg) as GradientDrawable   //here drawable is shape
                             drawable.setColor(Color.parseColor(it1.getString(R.color.white)))
                             it.itemTodo.background = drawable
                         }
                         it.title.setTextColor(R.color.black)
                         it.status.setTextColor(R.color.black)
                         context?.let { it1 ->
-                            var drawable = AppCompatResources.getDrawable(it1,R.drawable.baseline_delete_24)    //here drawable is vector (icon)
+                            var drawable = AppCompatResources.getDrawable(it1,
+                                R.drawable.baseline_delete_24
+                            )    //here drawable is vector (icon)
                             drawable?.let { it2 ->
                                 var wrappedDrawable = DrawableCompat.wrap(it2)
-                                DrawableCompat.setTint(wrappedDrawable,ContextCompat.getColor(it1,R.color.black))
+                                DrawableCompat.setTint(wrappedDrawable,ContextCompat.getColor(it1,
+                                    R.color.black
+                                ))
                                 it.deleteIcon.setImageDrawable(wrappedDrawable)
                             }
                         }
                         context?.let { it1 ->
-                            var drawable = AppCompatResources.getDrawable(it1,R.drawable.baseline_alarm_24)
+                            var drawable = AppCompatResources.getDrawable(it1,
+                                R.drawable.baseline_alarm_24
+                            )
                             drawable?.let{ it2 ->
                                 var wrappedDrawable = DrawableCompat.wrap(it2)
-                                DrawableCompat.setTint(wrappedDrawable,ContextCompat.getColor(it1,R.color.black))
+                                DrawableCompat.setTint(wrappedDrawable,ContextCompat.getColor(it1,
+                                    R.color.black
+                                ))
                                 it.remainderIcon.setImageDrawable(wrappedDrawable)
                             }
                         }
                     }
                     "inProgress".lowercase() -> {
                         context?.let { it1 ->
-                            var drawable = ContextCompat.getDrawable(it1,R.drawable.card_todo_bg) as GradientDrawable
+                            var drawable = ContextCompat.getDrawable(it1, R.drawable.card_todo_bg) as GradientDrawable
                             drawable.setColor(Color.parseColor(it1.getString(R.color.in_progress)))
                             it.itemTodo.background = drawable
                         }
                         it.title.setTextColor(R.color.white)
                         it.status.setTextColor(R.color.white)
                         context?.let { it1 ->
-                            var drawable = AppCompatResources.getDrawable(it1,R.drawable.baseline_delete_24)
+                            var drawable = AppCompatResources.getDrawable(it1,
+                                R.drawable.baseline_delete_24
+                            )
                             drawable?.let { it2 ->
                                 var wrappedDrawable = DrawableCompat.wrap(it2)
-                                DrawableCompat.setTint(wrappedDrawable,ContextCompat.getColor(it1,R.color.white))
+                                DrawableCompat.setTint(wrappedDrawable,ContextCompat.getColor(it1,
+                                    R.color.white
+                                ))
                                 it.deleteIcon.setImageDrawable(wrappedDrawable)
                             }
                         }
                         context?.let { it1 ->
-                            var drawable = AppCompatResources.getDrawable(it1,R.drawable.baseline_alarm_24)
+                            var drawable = AppCompatResources.getDrawable(it1,
+                                R.drawable.baseline_alarm_24
+                            )
                             drawable?.let{ it2 ->
                                 var wrappedDrawable = DrawableCompat.wrap(it2)
-                                DrawableCompat.setTint(wrappedDrawable,ContextCompat.getColor(it1,R.color.white))
+                                DrawableCompat.setTint(wrappedDrawable,ContextCompat.getColor(it1,
+                                    R.color.white
+                                ))
                                 it.remainderIcon.setImageDrawable(wrappedDrawable)
                             }
                         }
                     }
                     "Completed".lowercase() -> {
                         context?.let { it1 ->
-                            var drawable = ContextCompat.getDrawable(it1,R.drawable.card_todo_bg) as GradientDrawable
+                            var drawable = ContextCompat.getDrawable(it1, R.drawable.card_todo_bg) as GradientDrawable
                             drawable.setColor(Color.parseColor(it1.getString(R.color.completed)))
                             it.itemTodo.background = drawable
                         }
                         it.title.setTextColor(R.color.white)
                         it.status.setTextColor(R.color.white)
                         context?.let { it1 ->
-                            var drawable = AppCompatResources.getDrawable(it1,R.drawable.baseline_delete_24)
+                            var drawable = AppCompatResources.getDrawable(it1,
+                                R.drawable.baseline_delete_24
+                            )
                             drawable?.let { it2 ->
                                 var wrappedDrawable = DrawableCompat.wrap(it2)
-                                DrawableCompat.setTint(wrappedDrawable,ContextCompat.getColor(it1,R.color.white))
+                                DrawableCompat.setTint(wrappedDrawable,ContextCompat.getColor(it1,
+                                    R.color.white
+                                ))
                                 it.deleteIcon.setImageDrawable(wrappedDrawable)
                             }
                         }
                         context?.let { it1 ->
-                            var drawable = AppCompatResources.getDrawable(it1,R.drawable.baseline_alarm_24)
+                            var drawable = AppCompatResources.getDrawable(it1,
+                                R.drawable.baseline_alarm_24
+                            )
                             drawable?.let{ it2 ->
                                 var wrappedDrawable = DrawableCompat.wrap(it2)
-                                DrawableCompat.setTint(wrappedDrawable,ContextCompat.getColor(it1,R.color.white))
+                                DrawableCompat.setTint(wrappedDrawable,ContextCompat.getColor(it1,
+                                    R.color.white
+                                ))
                                 it.remainderIcon.setImageDrawable(wrappedDrawable)
                             }
                         }
@@ -177,12 +204,25 @@ class TodoAdapter(
         return itemsList.size
     }
 
-    fun addTodo(newTodo: Todo) {
+    fun getItem(position: Int): TodoItem{
+        return itemsList[position]
+    }
+
+    fun getItems():ArrayList<TodoItem>{
+        return itemsList as ArrayList<TodoItem>
+    }
+
+    fun setTodosToAdapter(todos:List<TodoItem>) {
+        itemsList = todos
+        notifyDataSetChanged()
+    }
+
+    fun addTodo(newTodo: TodoItem) {
         /*this.itemsList.add(newTodo)*/
         notifyDataSetChanged()
     }
 
-    fun editTodo(position: Int,updatedTodo: Todo){
+    fun editTodo(position: Int,updatedTodo: TodoItem){
         /*this.itemsList[position].title = updatedTodo.title.toString()
         this.itemsList[position].status = updatedTodo.status.toString()*/
         notifyItemChanged(position)

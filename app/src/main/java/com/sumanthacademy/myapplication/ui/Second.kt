@@ -1,11 +1,9 @@
-package com.sumanthacademy.myapplication
+package com.sumanthacademy.myapplication.ui
 
 import android.os.Bundle
 import android.widget.TextView
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import com.sumanthacademy.myapplication.R
 
 class Second : AppCompatActivity() {
 

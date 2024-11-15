@@ -8,13 +8,9 @@ import android.view.View
 import android.view.Window
 import android.view.WindowManager
 import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.widget.ViewPager2
-import com.sumanthacademy.myapplication.MainActivity
+import com.sumanthacademy.myapplication.ui.MainActivity
 import com.sumanthacademy.myapplication.R
 import com.sumanthacademy.myapplication.adapter.IntroSliderAdapter
 
@@ -82,7 +78,7 @@ class WelecomeActivity : BaseActivity(), View.OnClickListener {
         if (view != null) {
             when(view?.id) {
                 R.id.loginBtn -> {
-                    val intent = Intent(this@WelecomeActivity,MainActivity::class.java)
+                    val intent = Intent(this@WelecomeActivity, MainActivity::class.java)
                     Handler(Looper.getMainLooper()).postDelayed(
                         {
                             startActivity(intent)

@@ -1,4 +1,4 @@
-package com.sumanthacademy.myapplication
+package com.sumanthacademy.myapplication.helper
 
 import android.os.SystemClock
 import android.view.View

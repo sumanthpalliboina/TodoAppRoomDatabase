@@ -5,6 +5,7 @@ class AppConstants {
         const val SHARED_PREFERENCE_FILENAME = "Sample"
         const val TITLE = "title"
         const val STATUS = "status"
+        const val IMAGE_INT = "imageInt"
         const val POSITION = "position"
         const val TODO = "TODO"
         const val SPLASH_TIME_OUT = 3500

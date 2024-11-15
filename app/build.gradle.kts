@@ -3,6 +3,8 @@ import com.android.build.api.dsl.ViewBinding
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    id("com.google.devtools.ksp")  //For Room Database
+    id("kotlin-parcelize")
 }
 
 android {
@@ -36,6 +38,7 @@ android {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
+
     kotlinOptions {
         jvmTarget = "1.8"
     }
@@ -44,6 +47,8 @@ android {
 dependencies {
 
     val lottieVersion = "6.5.2"
+    val roomVersion = "2.6.1"
+    val lifeCycleVersion = "2.8.6"
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
@@ -71,6 +76,19 @@ dependencies {
     implementation("org.greenrobot:eventbus:3.2.0")
 
     implementation("com.github.romandanylyk:PageIndicatorView:v1.0.1")
+
+    implementation("androidx.room:room-runtime:$roomVersion")
+    annotationProcessor("androidx.room:room-compiler:$roomVersion")
+    // To use Kotlin Symbol Processing (KSP)
+    ksp("androidx.room:room-compiler:$roomVersion")
+    //optional - kotlin extensions and coroutines support for room
+    implementation("androidx.room:room-ktx:$roomVersion")
+
+    //ViewModel
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:$lifeCycleVersion")
+
+    //LiveData
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:$lifeCycleVersion")
 
     /*implementation("com.android.support:appcompat-v7:27.1.1")
     implementation("com.android.support:recyclerview-v7:27.1.1")

@@ -8,9 +8,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import androidx.fragment.app.DialogFragment
-import com.sumanthacademy.myapplication.MainActivity
+import com.sumanthacademy.myapplication.ui.MainActivity
 import com.sumanthacademy.myapplication.model.Todo
 import com.sumanthacademy.myapplication.databinding.FragmentEditBinding
+import com.sumanthacademy.myapplication.model.entity.TodoItem
 import com.sumanthacademy.myapplication.util.AppConstants
 
 class EditFragment : DialogFragment(), View.OnClickListener {
@@ -38,12 +39,13 @@ class EditFragment : DialogFragment(), View.OnClickListener {
         const val TAG = "EditFragment"
 
         @JvmStatic
-        fun newInstance(position:Int,title: String, status: String) =
+        fun newInstance(position:Int,currentTodo:TodoItem) =
             EditFragment().apply {
                 arguments = Bundle().apply {
                     putInt(AppConstants.POSITION,position)
-                    putString(AppConstants.TITLE, title)
-                    putString(AppConstants.STATUS, status)
+                    putInt(AppConstants.IMAGE_INT,currentTodo.image)
+                    putString(AppConstants.TITLE, currentTodo.title)
+                    putString(AppConstants.STATUS, currentTodo.status)
                 }
             }
     }
@@ -76,8 +78,9 @@ class EditFragment : DialogFragment(), View.OnClickListener {
                 var updatedTitle = b.title.text.toString()
                 var updatedStatus = b.status.text.toString()
                 var position = requireArguments().getInt(AppConstants.POSITION)
+                var image = requireArguments().getInt(AppConstants.IMAGE_INT,0)
                 (activity as MainActivity).editAndSaveTodo(position,
-                    Todo(null,updatedTitle,updatedStatus)
+                    TodoItem(image,updatedTitle,updatedStatus)
                 )
                 dismiss()
             }

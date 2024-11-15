@@ -44,12 +44,12 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".Second"
+            android:name=".ui.Second"
             android:exported="false"
-            android:parentActivityName=".MainActivity"
+            android:parentActivityName=".ui.MainActivity"
             android:theme="@style/Theme.Second" />
         <activity
-            android:name=".MainActivity"
+            android:name=".ui.MainActivity"
             android:configChanges="orientation|screenSize"
             android:exported="false" />
 

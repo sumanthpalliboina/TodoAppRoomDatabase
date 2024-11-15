@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import com.sumanthacademy.myapplication.util.AppConstants
-import com.sumanthacademy.myapplication.MainActivity
 import com.sumanthacademy.myapplication.R
 import com.sumanthacademy.myapplication.global.BaseActivity
 

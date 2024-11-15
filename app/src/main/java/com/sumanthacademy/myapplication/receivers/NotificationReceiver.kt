@@ -9,14 +9,12 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.os.Build
-import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.graphics.drawable.toBitmap
-import com.sumanthacademy.myapplication.MainActivity
+import com.sumanthacademy.myapplication.ui.MainActivity
 import com.sumanthacademy.myapplication.R
 
 class NotificationReceiver: BroadcastReceiver() {
@@ -40,7 +38,8 @@ class NotificationReceiver: BroadcastReceiver() {
                 builder.setSmallIcon(R.drawable.mind)
                     .setContentTitle("Todo Remainder")
                     .setContentText("You have a ${p1?.getStringExtra("name")} todo which is ${p1?.getStringExtra("progress")}")
-                    .setContentIntent(PendingIntent.getActivity(context,0,Intent(context,MainActivity::class.java),flags))  //for click and navigate to specified intent
+                    .setContentIntent(PendingIntent.getActivity(context,0,Intent(context,
+                        MainActivity::class.java),flags))  //for click and navigate to specified intent
                     .setAutoCancel(true) //clear notification after clicked and opened app
                     .setLargeIcon(bitmap)
                     .setStyle(NotificationCompat.BigPictureStyle().bigPicture(bitmap).bigLargeIcon(null as Bitmap?))
@@ -49,7 +48,8 @@ class NotificationReceiver: BroadcastReceiver() {
                     .setContentTitle("Todo Remainder")
                     .setContentText("You have a todo to complete")
                     .setPriority(NotificationCompat.PRIORITY_HIGH)
-                    .setContentIntent(PendingIntent.getActivity(context,0,Intent(context,MainActivity::class.java),flags))
+                    .setContentIntent(PendingIntent.getActivity(context,0,Intent(context,
+                        MainActivity::class.java),flags))
                     .setAutoCancel(true)
                     .setLargeIcon(bitmap)
                     .setStyle(NotificationCompat.BigPictureStyle().bigPicture(bitmap).bigLargeIcon(null as Bitmap?))
