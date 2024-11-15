@@ -8,3 +8,4 @@
 8)Implemented enter ans exit trasition enimation for activity
 9)WELECOME page after splash to tell the user about main app features with slide fragments using FragmentStateAdapter for view pager adapter
 10)Integrate Room Database with enities to manage todos rather than saving in private shared preferences.
+11)Swipe left/right to delete todo
